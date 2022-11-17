@@ -39,17 +39,6 @@ const imprime = async () => {
   }
 };
 
-// const imprime = async () => {
-//   loading();
-//   const dados = await fetchProductsList('computador');
-//   deletP();
-//   return dados.forEach((element) => {
-//     const result = createProductElement(element);
-//     console.log(result);
-//     products.appendChild(result);
-//   })
-// };
-
 window.onload = () => {
   imprime();
 };
