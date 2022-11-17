@@ -1,12 +1,14 @@
 import { searchCep } from './helpers/cepFunctions';
 import './style.css';
-import { createProductElement } from './helpers/shopFunctions';
-import { fetchProductsList } from './helpers/fetchFunctions';
+import { createProductElement, createCartProductElement } from './helpers/shopFunctions';
+import { fetchProduct, fetchProductsList } from './helpers/fetchFunctions';
+import { saveCartID } from './helpers/cartFunctions';
 
 document.querySelector('.cep-button').addEventListener('click', searchCep);
 const products = document.querySelector('.products');
 const p = document.createElement('p');
 const h1 = document.createElement('h1');
+const productsAll = document.querySelectorAll('.products');
 
 const createdError = () => {
   h1.className = 'error';
@@ -38,6 +40,18 @@ const imprime = async () => {
     createdError();
   }
 };
+
+productsAll.forEach((button) => {
+  button.addEventListener('click', async (event) => {
+    const father = document.querySelector('.cart__products');
+    if (event.target) {
+      const id = event.target.parentNode.firstChild.textContent;
+      saveCartID(id);
+      const result = await fetchProduct(id);
+      father.appendChild(createCartProductElement(result));
+    }
+  });
+});
 
 window.onload = () => {
   imprime();
