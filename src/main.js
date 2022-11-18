@@ -10,6 +10,9 @@ const p = document.createElement('p');
 const h1 = document.createElement('h1');
 const productsAll = document.querySelectorAll('.products');
 
+const father = document.querySelector('.cart__products');
+const price = document.querySelector('.total-price');
+
 const createdError = () => {
   h1.className = 'error';
   h1.textContent = 'Algum erro ocorreu, recarregue a página e tente novamente';
@@ -40,16 +43,37 @@ const imprime = async () => {
   }
 };
 
+const sum = () => {
+  let soma = 0;
+  getSavedCartIDs().map((elementId) => Promise.all([fetchProduct(elementId)])
+    .then(
+      (res) => res.map((response) => {
+        soma += response.price;
+        price.textContent = soma;
+        return price.innerHTML;
+      }),
+    ));
+};
+
+father.addEventListener('click', (event) => {
+  const sub = event.target.parentNode.lastElementChild.lastElementChild.innerHTML;
+  const number1 = Number(sub);
+  const number2 = Number(price.innerHTML);
+  const result = number2 - number1;
+  price.innerHTML = '';
+  price.innerHTML = result;
+  console.log(result);
+});
+
 const carShopping = () => {
   productsAll.forEach((button) => {
     button.addEventListener('click', async (event) => {
-      const father = document.querySelector('.cart__products');
       if (event.target) {
         const id = event.target.parentNode.firstChild.textContent;
         saveCartID(id);
         const result = await fetchProduct(id);
         father.appendChild(createCartProductElement(result));
-        console.log(result);
+        sum();
       }
     });
   });
@@ -61,14 +85,13 @@ const saveLocal = () => {
   const ids = getSavedCartIDs();
   ids.map((element) => {
     const data = fetchProduct(element);
-    return Promise.all([data]).then((values) => values.map((res) => {
-      const father = document.querySelector('.cart__products');
-      return father.appendChild(createCartProductElement(res));
-    }));
+    return Promise.all([data]).then((values) => values
+      .map((res) => father.appendChild(createCartProductElement(res))));
   });
 };
 
 window.onload = () => {
   imprime();
   saveLocal();
+  sum();
 };
